@@ -1,0 +1,7 @@
+name: ChatBot
+version: '1.0.0'
+main: org.baicaizhale.chatBot.ChatBot
+api-version: '1.20'
+authors: [ baicaizhale ]
+description: 让你的玩家跟不存在的玩家聊天
+website: baicaizhale.icu

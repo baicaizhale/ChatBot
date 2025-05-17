@@ -1,0 +1,10 @@
+# Cloudflare 配置
+cloudflare:
+  account_id: "e607239dba3500c1a85a15d9c37c90d6"  # 新增账户ID字段
+  api_key: "8BqrhHm4-umt3_TjkS_t4Fjr8YlXcRbDRPyjjqWw"        # API密钥
+  model: "@cf/meta/llama-2-7b-chat-int8"  # 默认模型
+  api_url: "https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/run/"  # 修正API地址
+
+# 上下文配置
+context:
+  max_length: 100
