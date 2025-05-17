@@ -1,10 +1,20 @@
-# Cloudflare 配置
+# Cloudflare配置
 cloudflare:
-  account_id: "e607239dba3500c1a85a15d9c37c90d6"  # 新增账户ID字段
-  api_key: "8BqrhHm4-umt3_TjkS_t4Fjr8YlXcRbDRPyjjqWw"        # API密钥
-  model: "@cf/meta/llama-2-7b-chat-int8"  # 默认模型
-  api_url: "https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/run/"  # 修正API地址
+  account_id: "e607239dba3500c1a85a15d9c37c90d6"
+  api_key: "8BqrhHm4-umt3_TjkS_t4Fjr8YlXcRbDRPyjjqWw"
+  model: "@cf/meta/llama-3-8b-instruct"
+  api_url: "https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/run/{model}"
 
 # 上下文配置
 context:
   max_length: 100
+
+# AI提示词配置
+prompt:
+  system_prompt: |
+    你是一个Minecraft玩家，需要自然地在聊天中回复其他玩家。
+    遵守以下规则：
+    1. 回复简短口语化，避免复杂句子
+    2. 使用常见的Minecraft术语（如"挖矿"、"下界"）
+    3. 偶尔使用表情符号如 :) 或 >_<
+    4. 不要承认自己是AI
