@@ -3,15 +3,21 @@ package org.baicaizhale.chatBot;
 import okhttp3.*;
 import com.google.gson.*;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class AIClient {
+    private final OkHttpClient client;
     private final String apiUrl;
     private final String apiKey;
 
     public AIClient(String apiUrl, String accountId, String apiKey, String model) {
+        this.client = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .build();
         this.apiUrl = apiUrl
                 .replace("{account_id}", accountId)
-                .replace("{model}", model); // model 作为局部变量使用
+                .replace("{model}", model);
         this.apiKey = apiKey;
     }
 
@@ -19,10 +25,7 @@ public class AIClient {
         try {
             JsonObject requestBody = buildRequestBody(context, isNameGeneration);
             Request request = buildRequest(requestBody);
-
-            try (Response response = new OkHttpClient().newCall(request).execute()) {
-                return parseResponse(response);
-            }
+            return executeRequest(request);
         } catch (Exception e) {
             ChatBot.getInstance().getLogger().warning("AI请求失败: " + e.getMessage());
             return null;
@@ -30,20 +33,20 @@ public class AIClient {
     }
 
     private JsonObject buildRequestBody(String context, boolean isNameGeneration) {
-        JsonObject requestBody = new JsonObject();
+        JsonObject body = new JsonObject();
         if (isNameGeneration) {
-            requestBody.addProperty("prompt", context);
-            requestBody.addProperty("max_tokens", 15);
+            body.addProperty("prompt", context);
+            body.addProperty("max_tokens", 15);
         } else {
             JsonArray messages = new JsonArray();
             JsonObject systemMsg = new JsonObject();
             systemMsg.addProperty("role", "system");
             systemMsg.addProperty("content", context);
             messages.add(systemMsg);
-            requestBody.add("messages", messages);
-            requestBody.addProperty("temperature", 0.7);
+            body.add("messages", messages);
+            body.addProperty("temperature", 0.7);
         }
-        return requestBody;
+        return body;
     }
 
     private Request buildRequest(JsonObject requestBody) {
@@ -58,11 +61,13 @@ public class AIClient {
                 .build();
     }
 
-    private String parseResponse(Response response) throws IOException {
-        if (!response.isSuccessful() || response.body() == null) return null;
+    private String executeRequest(Request request) throws IOException {
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful() || response.body() == null) return null;
 
-        String responseBody = response.body().string();
-        JsonObject jsonResponse = JsonParser.parseString(responseBody).getAsJsonObject();
-        return jsonResponse.getAsJsonObject("result").get("response").getAsString();
+            String responseBody = response.body().string();
+            JsonObject json = JsonParser.parseString(responseBody).getAsJsonObject();
+            return json.getAsJsonObject("result").get("response").getAsString();
+        }
     }
 }
