@@ -1,5 +1,5 @@
 name: ChatBot
-version: '1.0.0'
+version: '0.1.0'
 main: org.baicaizhale.chatBot.ChatBot
 api-version: '1.20'
 authors: [ baicaizhale ]
